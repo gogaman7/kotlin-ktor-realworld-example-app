@@ -106,3 +106,19 @@ why in the world are we introducing timing directives?
 
 what's with dynamic ports, how come what we had before was not sufficient?
 @AppRule.kt (13-20) 
+
+2026-06-30 18:02:08-04:00
+
+take all staged files. create comments for each file changed and why we are changing things inside each file.
+let me preview the  git commit message.
+and only local commit (dont push nothing to remote)
+
+2026-06-30 18:04:08-04:00
+let's implement Part4:@PLAN.md (87-88) 
+
+2026-06-30 18:12:08-04:00
+don't need to add "main" branch for ci. did not have before.
+update README.md to include link to `testing.md` which should include docs for gradle.yaml overview, local run notes for @.github/workflows/spec-api.yml 
+
+2026-06-30 18:20:08-04:00
+@run-api-tests.sh (5-6)  what's with this site? its not a real url. can we just remove the default cloud url, and just error out if nothing is passed in. show usage too, this way can instruct that cloud url pointing is possible. show example url. 
