@@ -1,35 +1,56 @@
-2026-06-30 15:36:08-04:00
-@README.md . gradlew clean install is failing. figure out what's wrong.
+# Prompt history
 
-Latest JDK25 is too new, using JDK21
+Chronological log of prompts used during this assessment.
 
-2026-06-30 15:43:08-04:00
-you see my terminal output when I try to run ./gradlew clean install ?
+---
 
-extra:
-first run outside 
+**2026-06-30 15:36**
 
-2026-06-30 15:52:08-04:00
-nope. build fails for both `gradlew clean install` and `gradlew clean build`
+`./gradlew clean install` is failing — diagnose and fix. Context: JDK 25 is too new; use JDK 21.
 
-2026-06-30 16:01:08-04:00
-create local-development-environment.md with how to run the project cleanly, including nix-shell . how to install nix-shell and commands to run after.
+---
 
-document JAVA_HOME environment variable details.
+**2026-06-30 15:43**
 
-2026-06-30 16:05:08-04:00
-update @local-development-environment.md  . dont need to mention JDK25 , that was just a starting point. we are just documenting how to run the project now. never mind previous shell.nix
+Review terminal output from `./gradlew clean install`. Note: first run was attempted outside nix-shell.
 
-2026-06-30 16:13:08-04:00
-check out my terminal , ./gradlew run shows a stacktrace with errors. port 8080 does not start listenning . some server is not standing up. there should be no external services requirements.
+---
 
-2026-06-30 16:20:08-04:00
-you test yourself. and access endpoint that works. hit existing restful endpoint to create one entity and retrieve it back. i want a working server.
+**2026-06-30 15:52**
 
-2026-06-30 16:29:08-04:00
+Build still fails for both `./gradlew clean install` and `./gradlew clean build`.
 
-bellow now works
+---
 
+**2026-06-30 16:01**
+
+Create `local-development-environment.md`: how to run the project cleanly with `nix-shell`, how to install Nix, post-setup commands, and `JAVA_HOME` details.
+
+---
+
+**2026-06-30 16:05**
+
+Update `local-development-environment.md` — drop JDK 25 troubleshooting; document current setup only. Do not dwell on earlier `shell.nix` history.
+
+---
+
+**2026-06-30 16:13**
+
+`./gradlew run` throws a stack trace; nothing listens on port 8080. The server should start with no external service dependencies.
+
+---
+
+**2026-06-30 16:20**
+
+Verify yourself: hit a working REST endpoint — create an entity and read it back. Goal is a working server.
+
+---
+
+**2026-06-30 16:29**
+
+Confirmed working flow:
+
+```bash
 # 1. Create user
 curl -X POST http://localhost:8080/users \
   -H "Content-Type: application/json" \
@@ -38,87 +59,76 @@ curl -X POST http://localhost:8080/users \
 # 2. Retrieve user (use token from step 1)
 curl http://localhost:8080/user \
   -H "Authorization: Token <token>"
+```
 
-2026-06-30 16:41:08-04:00
-@src/main/kotlin/io/realworld/app/domain/User.kt ln: 11 . before UserDTO required empty password , and now we are not allowing blank password? before userdto was creating random password / username ? obvious bug . or logic oversight ?
+---
 
-Answer:
-Most likely cause
+**2026-06-30 16:41**
 
-A missing ! — the intended checks were almost certainly:
+`User.kt` line 11: did `UserDTO` previously require an empty password, and now blank passwords are rejected? Was it generating random username/password before — bug or intentional?
 
-!user.password.isNullOrBlank() &&
-!user.username.isNullOrBlank()
-Same pattern was wrong in validLogin() and validToUpdate(). Tests didn’t catch it because UserControllerTest is marked @Ignore.
+**Outcome:** Inverted `isNullOrBlank()` checks (missing `!`) in `validRegister()`, `validLogin()`, and `validToUpdate()`. Tests missed it because `UserControllerTest` is `@Ignore`. Fix aligns with RealWorld spec: register needs email + username + password; login needs email + password.
 
-The current fix matches the RealWorld spec and the rest of the codebase: registration requires email + username + password; login requires email + password.
+---
 
-2026-06-30 16:45:08-04:00
+**2026-06-30 16:45**
 
-@src/test/kotlin/io/realworld/app/web/rules/AppRule.kt i like previous version where time units are spelled out. if it still works, i prefer no changing that.
+`AppRule.kt`: prefer the previous version with spelled-out time units if it still works.
 
-2026-06-30 16:48:08-04:00
+---
 
-take it back. lets use new syntax, working around 3 agruments no longer allowed, causes a bit too much trickery with subtle stop() calling. previous syntax looks clean.
+**2026-06-30 16:48**
 
-``` @AppRule.kt (11-13) 
+Revert that — keep the new two-argument `stop()` syntax. Avoid workarounds for the deprecated three-argument API; the previous call style is cleaner. See `AppRule.kt` lines 11–13.
 
-2026-06-30 16:56:08-04:00
+---
 
-@PLAN.md let's implement OPTION A. article favourite count endpoint . verify it does not exist before. lets add test coverage that is run part of ./gradlew test . read the rest of PLAN.md that would relate to implementation of option a.
+**2026-06-30 16:56**
 
-2026-06-30 17:11:08-04:00
-got back implementation in:
-* 9 file changes
-* 3 new files
+Implement PLAN.md Option A: article favorites count endpoint. Confirm it does not exist yet. Add tests that run under `./gradlew test`. Read the rest of PLAN.md for anything relevant to Option A.
 
-running tests
+---
 
-2026-06-30 17:33:08-04:00
+**2026-06-30 17:11**
 
-add comments explaining all new functions added. arguments.
+Implementation returned: 9 files changed, 3 new files. Running tests.
 
-* appconfig.kt
-add comments about why we are changing setup()
-* why we need a unique dbName, how it does not work for us before.
-* server() * why are we messing with that? it looks almost identical to what it was before
-* install(StatusPages)  . what's with new exception handling ? we did not have them before? no controller needed those active?
+---
 
-*dbConfig.kt:
-* why is this here? @DbConfig.kt (25-27)  transactions need to behave somehow different?
+**2026-06-30 17:33**
 
-* article Repository: comment new functions . 
+Add comments for all new functions and their arguments:
 
-document: @TagRepository.kt (27-30)
- document: class, and function: @ArticleService.kt (6-16) 
+- **AppConfig.kt** — why `setup()` changed; unique `dbName` and why shared DB failed before; why `server()` was extracted; new `StatusPages` handlers vs old behavior
+- **DbConfig.kt** — why schema creation lives in `setup()` (`DbConfig.kt` lines 25–27)
+- **ArticleRepository** — document new functions
+- **TagRepository.kt** (lines 27–30), **ArticleService.kt** (class + lines 6–16)
+- **String.kt** (lines 12–14) — purpose of `toSlug()`
+- **ArticleController.kt** — `popularFeed`, `create`, `favorite`, `parseQueryInt`
+- **PopularArticleFeedControllerTest.kt** — purpose of each test/helper
+- **HttpUtil.kt** (lines 20–22) — why `FAIL_ON_UNKNOWN_PROPERTIES` is needed
+- **AppRule.kt** (lines 13–20, 28–29) — dynamic ports and sleep delays
 
-what's the purpose of this function? @String.kt (12-14)
+---
 
- document: @ArticleController.kt (31-38) , @ArticleController.kt (45-53) and 2 others
+**2026-06-30 18:02**
 
-document, purpose of each new function
-@PopularArticleFeedControllerTest.kt (1-137) 
+For all staged files: add per-file change comments. Preview the git commit message. Local commit only — do not push.
 
-why is this required? @HttpUtil.kt (20-22) 
+---
 
-this looks horrible: @AppRule.kt (28-29) 
-why in the world are we introducing timing directives?
+**2026-06-30 18:04**
 
-what's with dynamic ports, how come what we had before was not sufficient?
-@AppRule.kt (13-20) 
+Implement PLAN.md Part 4: GitHub Actions CI/CD.
 
-2026-06-30 18:02:08-04:00
+---
 
-take all staged files. create comments for each file changed and why we are changing things inside each file.
-let me preview the  git commit message.
-and only local commit (dont push nothing to remote)
+**2026-06-30 18:12**
 
-2026-06-30 18:04:08-04:00
-let's implement Part4:@PLAN.md (87-88) 
+CI should trigger on `master` only (no `main`). Update README.md with a link to `testing.md` covering `gradle.yml` and local run notes for `.github/workflows/spec-api.yml`.
 
-2026-06-30 18:12:08-04:00
-don't need to add "main" branch for ci. did not have before.
-update README.md to include link to `testing.md` which should include docs for gradle.yaml overview, local run notes for @.github/workflows/spec-api.yml 
+---
 
-2026-06-30 18:20:08-04:00
-@run-api-tests.sh (5-6)  what's with this site? its not a real url. can we just remove the default cloud url, and just error out if nothing is passed in. show usage too, this way can instruct that cloud url pointing is possible. show example url. 
+**2026-06-30 18:20**
+
+`run-api-tests.sh` (lines 5–6): the default cloud URL is stale. Remove it; require `APIURL` and print usage on error. Usage should show local and optional hosted examples.
