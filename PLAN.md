@@ -19,9 +19,11 @@ This is a [RealWorld](https://github.com/gothinkster/realworld) spec implementat
 z
 ### Quick Start
 ```bashz
-./gradlew clean build   # Build
-./gradlew run           # Start server on port 8080
-./gradlew test          # Run tests
+./gradlew --stop           # stop existing gradle daemons running
+rm -fR ~/.gradle/caches/*  # make sure caches are clean
+./gradlew clean build      # Build
+./gradlew run              # Start server on port 8080
+./gradlew test             # Run tests
 ```
 
 ---

@@ -4,14 +4,15 @@ pkgs.mkShell {
   buildInputs = [
     pkgs.vim
     pkgs.zellij
-    pkgs.zulu25
-    pkgs.gradle
+    pkgs.zulu21
   ];
 
   shellHook = ''
-    echo "java 25, vim and zellij are now available";
- '';
+    export JAVA_HOME="${pkgs.zulu21}"
+    export PATH="$JAVA_HOME/bin:$PATH"
+    echo "java 21, vim and zellij are now available";
+    echo "JAVA_HOME=$JAVA_HOME"
+  '';
 
   REGISTRY_USERNAME = "igor";
 }
-
