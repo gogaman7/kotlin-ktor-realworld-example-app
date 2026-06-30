@@ -62,3 +62,47 @@ The current fix matches the RealWorld spec and the rest of the codebase: registr
 take it back. lets use new syntax, working around 3 agruments no longer allowed, causes a bit too much trickery with subtle stop() calling. previous syntax looks clean.
 
 ``` @AppRule.kt (11-13) 
+
+2026-06-30 16:56:08-04:00
+
+@PLAN.md let's implement OPTION A. article favourite count endpoint . verify it does not exist before. lets add test coverage that is run part of ./gradlew test . read the rest of PLAN.md that would relate to implementation of option a.
+
+2026-06-30 17:11:08-04:00
+got back implementation in:
+* 9 file changes
+* 3 new files
+
+running tests
+
+2026-06-30 17:33:08-04:00
+
+add comments explaining all new functions added. arguments.
+
+* appconfig.kt
+add comments about why we are changing setup()
+* why we need a unique dbName, how it does not work for us before.
+* server() * why are we messing with that? it looks almost identical to what it was before
+* install(StatusPages)  . what's with new exception handling ? we did not have them before? no controller needed those active?
+
+*dbConfig.kt:
+* why is this here? @DbConfig.kt (25-27)  transactions need to behave somehow different?
+
+* article Repository: comment new functions . 
+
+document: @TagRepository.kt (27-30)
+ document: class, and function: @ArticleService.kt (6-16) 
+
+what's the purpose of this function? @String.kt (12-14)
+
+ document: @ArticleController.kt (31-38) , @ArticleController.kt (45-53) and 2 others
+
+document, purpose of each new function
+@PopularArticleFeedControllerTest.kt (1-137) 
+
+why is this required? @HttpUtil.kt (20-22) 
+
+this looks horrible: @AppRule.kt (28-29) 
+why in the world are we introducing timing directives?
+
+what's with dynamic ports, how come what we had before was not sufficient?
+@AppRule.kt (13-20) 
